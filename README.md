@@ -83,3 +83,14 @@ on the current date.
 ## License
 
 MIT
+
+## Version 0.3.0
+
+- Added **Workdays this month** sensor.
+- Added **Work hours this month** sensor.
+- Calendar, event title and default start/end times can now be changed from the integration options.
+- Monthly statistics are calculated from matching events in the configured calendar, so direct calendar edits are reflected automatically.
+
+### Editing existing calendar events
+
+Home Assistant currently exposes calendar event update/delete capabilities to its frontend, but not as public `calendar.update_event` / `calendar.delete_event` actions. For that reason Work Calendar does not modify or delete existing events programmatically in v0.3.0. Existing events can be edited in Home Assistant's Calendar dashboard; the monthly sensors will then reflect the changed calendar data.
