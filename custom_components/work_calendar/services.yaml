@@ -1,7 +1,7 @@
 add_workday:
   fields:
     config_entry_id:
-      required: true
+      required: false
       selector:
         config_entry:
           integration: work_calendar
