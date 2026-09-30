@@ -137,3 +137,14 @@ config_entry_id: YOUR_WORK_CALENDAR_CONFIG_ENTRY_ID
 ```
 
 The work-hours sensor from v0.3.x has been removed. Statistics now show workdays for the current and previous month.
+
+## Version 0.5.2 – Automatic dashboard card loading
+
+The bundled Work Calendar card is now served and registered automatically by the integration. After installing/updating through HACS and restarting Home Assistant, no manual JavaScript resource registration is required.
+
+Add a manual dashboard card using:
+
+```yaml
+type: custom:work-calendar-card
+config_entry_id: YOUR_WORK_CALENDAR_CONFIG_ENTRY_ID
+```
