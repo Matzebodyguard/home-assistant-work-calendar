@@ -11,14 +11,19 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.util import dt as dt_util
 from .const import CONF_CALENDAR,CONF_END_TIME,CONF_EVENT_TITLE,CONF_START_TIME,DOMAIN,PLATFORMS,config_value
-SERVICE_SCHEMA=vol.Schema({vol.Required("config_entry_id"):cv.string,vol.Required("date"):cv.date,vol.Optional("start_time"):cv.time,vol.Optional("end_time"):cv.time})
+SERVICE_SCHEMA=vol.Schema({vol.Optional("config_entry_id"):cv.string,vol.Required("date"):cv.date,vol.Optional("start_time"):cv.time,vol.Optional("end_time"):cv.time})
 def _t(v):return v if isinstance(v,time) else time.fromisoformat(v)
 async def async_setup(hass:HomeAssistant,config:ConfigType)->bool:
  frontend_path=Path(__file__).parent/"frontend"
  await hass.http.async_register_static_paths([StaticPathConfig("/work_calendar/work-calendar-card.js",str(frontend_path/"work-calendar-card.js"),False)])
  add_extra_js_url(hass,"/work_calendar/work-calendar-card.js")
  async def add_workday(call:ServiceCall)->None:
-  entry=hass.config_entries.async_get_entry(call.data["config_entry_id"])
+  entry_id=call.data.get("config_entry_id")
+  if entry_id:entry=hass.config_entries.async_get_entry(entry_id)
+  else:
+   entries=[item for item in hass.config_entries.async_entries(DOMAIN) if item.state is ConfigEntryState.LOADED]
+   if len(entries)!=1:raise ServiceValidationError("Bitte eine Work-Calendar-Konfiguration angeben, da nicht genau eine geladen ist")
+   entry=entries[0]
   if entry is None or entry.domain!=DOMAIN:raise ServiceValidationError("Work Calendar configuration not found")
   if entry.state is not ConfigEntryState.LOADED:raise ServiceValidationError("Work Calendar configuration is not loaded")
   start_clock=call.data.get("start_time") or _t(config_value(entry,CONF_START_TIME));end_clock=call.data.get("end_time") or _t(config_value(entry,CONF_END_TIME))
