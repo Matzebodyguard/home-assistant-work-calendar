@@ -2,7 +2,7 @@ from __future__ import annotations
 from datetime import datetime,time
 from pathlib import Path
 from homeassistant.components.http import StaticPathConfig
-from homeassistant.components.frontend import add_extra_js_url
+from homeassistant.components.lovelace.resources import ResourceStorageCollection
 import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry,ConfigEntryState
 from homeassistant.core import HomeAssistant,ServiceCall
@@ -16,7 +16,17 @@ def _t(v):return v if isinstance(v,time) else time.fromisoformat(v)
 async def async_setup(hass:HomeAssistant,config:ConfigType)->bool:
  frontend_path=Path(__file__).parent/"frontend"
  await hass.http.async_register_static_paths([StaticPathConfig("/work_calendar/work-calendar-card.js",str(frontend_path/"work-calendar-card.js"),False)])
- add_extra_js_url(hass,"/work_calendar/work-calendar-card.js")
+ lovelace=hass.data.get("lovelace")
+ if lovelace is not None:
+  resources=lovelace.resources if hasattr(lovelace,"resources") else lovelace.get("resources")
+  if isinstance(resources,ResourceStorageCollection):
+   await resources.async_get_info()
+   base="/work_calendar/work-calendar-card.js"
+   url=f"{base}?v=0.5.7"
+   existing=next((item for item in resources.async_items() if item.get("url","").startswith(base)),None)
+   if existing:
+    if existing.get("url")!=url or existing.get("res_type")!="module":await resources.async_update_item(existing["id"],{"res_type":"module","url":url})
+   else:await resources.async_create_item({"res_type":"module","url":url})
  async def add_workday(call:ServiceCall)->None:
   entry_id=call.data.get("config_entry_id")
   if entry_id:entry=hass.config_entries.async_get_entry(entry_id)
