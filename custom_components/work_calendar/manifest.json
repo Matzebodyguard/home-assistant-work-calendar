@@ -1,1 +1,14 @@
-{"domain":"work_calendar","name":"Work Calendar","codeowners":[],"config_flow":true,"integration_type":"helper","iot_class":"local_polling","requirements":[],"version":"0.5.5"}
+{
+  "domain": "work_calendar",
+  "name": "Work Calendar",
+  "codeowners": [
+    "@Matzebodyguard"
+  ],
+  "config_flow": true,
+  "integration_type": "service",
+  "iot_class": "local_polling",
+  "requirements": [],
+  "version": "0.5.6",
+  "documentation": "https://github.com/Matzebodyguard/home-assistant-work-calendar",
+  "issue_tracker": "https://github.com/Matzebodyguard/home-assistant-work-calendar/issues"
+}
