@@ -22,7 +22,7 @@ async def async_setup(hass:HomeAssistant,config:ConfigType)->bool:
   if isinstance(resources,ResourceStorageCollection):
    await resources.async_get_info()
    base="/work_calendar/work-calendar-card.js"
-   url=f"{base}?v=0.5.9"
+   url=f"{base}?v=0.5.10"
    existing=next((item for item in resources.async_items() if item.get("url","").startswith(base)),None)
    if existing:
     if existing.get("url")!=url or existing.get("res_type")!="module":await resources.async_update_item(existing["id"],{"res_type":"module","url":url})
