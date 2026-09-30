@@ -15,7 +15,10 @@ class MonthlyWorkDays(SensorEntity):
     _attr_native_unit_of_measurement="d"
     _attr_icon="mdi:calendar-month"
     def __init__(self,hass:HomeAssistant,entry:ConfigEntry,offset:int,key:str,name:str):
-        self.hass=hass;self.entry=entry;self.offset=offset;self._attr_unique_id=f"{entry.entry_id}_{key}";self._attr_name=name;self._attr_native_value=0
+        self.hass=hass;self.entry=entry;self.offset=offset;self.key=key;self._attr_unique_id=f"{entry.entry_id}_{key}";self._attr_name=name;self._attr_native_value=0
+    @property
+    def extra_state_attributes(self):
+        return {"work_calendar_stat": self.key, "work_calendar_entry_id": self.entry.entry_id}
     def _range(self):
         now=dt_util.now();current=now.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
         if self.offset==0:start=current
