@@ -2,10 +2,12 @@ from __future__ import annotations
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.util import dt as dt_util
-from .const import DATA_SELECTED_DATES,DOMAIN,PLATFORMS
+from .const import DATA_SELECTED_DATES,DATA_SELECTED_END_TIMES,DATA_SELECTED_START_TIMES,DOMAIN,PLATFORMS
 async def async_setup_entry(hass:HomeAssistant,entry:ConfigEntry)->bool:
     hass.data.setdefault(DOMAIN,{})
     dates=hass.data[DOMAIN].setdefault(DATA_SELECTED_DATES,{})
+    hass.data[DOMAIN].setdefault(DATA_SELECTED_START_TIMES,{})
+    hass.data[DOMAIN].setdefault(DATA_SELECTED_END_TIMES,{})
     dates.setdefault(entry.entry_id,dt_util.now().date())
     await hass.config_entries.async_forward_entry_setups(entry,PLATFORMS)
     return True
