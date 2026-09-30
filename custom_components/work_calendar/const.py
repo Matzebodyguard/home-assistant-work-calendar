@@ -1,6 +1,6 @@
 from datetime import time
 DOMAIN="work_calendar"
-PLATFORMS=["button","date","time","sensor"]
+PLATFORMS=["button","sensor"]
 CONF_CALENDAR="calendar_entity"
 CONF_EVENT_TITLE="event_title"
 CONF_START_TIME="start_time"
