@@ -8,7 +8,7 @@
   "integration_type": "service",
   "iot_class": "local_polling",
   "requirements": [],
-  "version": "0.5.10",
+  "version": "0.5.11",
   "documentation": "https://github.com/Matzebodyguard/home-assistant-work-calendar",
   "issue_tracker": "https://github.com/Matzebodyguard/home-assistant-work-calendar/issues"
 }
