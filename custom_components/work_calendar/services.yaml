@@ -1,0 +1,19 @@
+add_workday:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: work_calendar
+    date:
+      required: true
+      selector:
+        date:
+    start_time:
+      required: false
+      selector:
+        time:
+    end_time:
+      required: false
+      selector:
+        time:
