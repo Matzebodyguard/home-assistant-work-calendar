@@ -11,7 +11,6 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
-    UpdateFailed,
 )
 from homeassistant.util import dt as dt_util
 
@@ -68,8 +67,8 @@ async def async_setup_entry(
                 blocking=True,
                 return_response=True,
             )
-        except Exception as err:
-            raise UpdateFailed(f"Could not read calendar {calendar}: {err}") from err
+        except Exception:
+            return {"days_this_month": 0, "days_last_month": 0}
 
         current_days: set[date] = set()
         previous_days: set[date] = set()
@@ -96,7 +95,6 @@ async def async_setup_entry(
         update_method=async_update_data,
         update_interval=timedelta(minutes=5),
     )
-    await coordinator.async_config_entry_first_refresh()
     hass.data.setdefault(DOMAIN, {}).setdefault("coordinators", {})[entry.entry_id] = coordinator
     async_add_entities(
         [
@@ -104,6 +102,7 @@ async def async_setup_entry(
             MonthlyWorkDays(coordinator, entry, "days_last_month", "Arbeitstage letzten Monat"),
         ]
     )
+    await coordinator.async_refresh()
 
 
 class MonthlyWorkDays(CoordinatorEntity, SensorEntity):
