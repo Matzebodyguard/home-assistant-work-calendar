@@ -14,7 +14,8 @@ class WorkCalendarCard extends HTMLElement {
   }
   _entity(kind){
     const explicit=this.config?.[kind];if(explicit)return explicit;
-    const ids=Object.keys(this._hass?.states||{});
+    const states=this._hass?.states||{};const ids=Object.keys(states);
+    if(kind==="days_this_month"||kind==="days_last_month"){const found=ids.find(id=>id.startsWith("sensor.")&&states[id]?.attributes?.work_calendar_stat===kind);if(found)return found;}
     const domain=kind==="today"||kind==="yesterday"?"button.":"sensor.";
     const needles={today:["heute_gearbeitet","worked_today"],yesterday:["gestern_gearbeitet","worked_yesterday"],days_this_month:["days_this_month","arbeitstage_diesen_monat"],days_last_month:["days_last_month","arbeitstage_letzten_monat"]}[kind]||[kind];
     return ids.find(id=>id.startsWith(domain)&&needles.some(n=>id.includes(n)));
