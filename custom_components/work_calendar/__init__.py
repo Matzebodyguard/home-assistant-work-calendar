@@ -1,5 +1,7 @@
 from __future__ import annotations
 from datetime import datetime,time
+from pathlib import Path
+from homeassistant.components.http import StaticPathConfig
 import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry,ConfigEntryState
 from homeassistant.core import HomeAssistant,ServiceCall
@@ -11,6 +13,8 @@ from .const import CONF_CALENDAR,CONF_END_TIME,CONF_EVENT_TITLE,CONF_START_TIME,
 SERVICE_SCHEMA=vol.Schema({vol.Required("config_entry_id"):cv.string,vol.Required("date"):cv.date,vol.Optional("start_time"):cv.time,vol.Optional("end_time"):cv.time})
 def _t(v):return v if isinstance(v,time) else time.fromisoformat(v)
 async def async_setup(hass:HomeAssistant,config:ConfigType)->bool:
+ frontend_path=Path(__file__).parent/"frontend"
+ await hass.http.async_register_static_paths([StaticPathConfig("/work_calendar/work-calendar-card.js",str(frontend_path/"work-calendar-card.js"),False)])
  async def add_workday(call:ServiceCall)->None:
   entry=hass.config_entries.async_get_entry(call.data["config_entry_id"])
   if entry is None or entry.domain!=DOMAIN:raise ServiceValidationError("Work Calendar configuration not found")
