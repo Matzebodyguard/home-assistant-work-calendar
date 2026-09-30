@@ -94,3 +94,14 @@ MIT
 ### Editing existing calendar events
 
 Home Assistant currently exposes calendar event update/delete capabilities to its frontend, but not as public `calendar.update_event` / `calendar.delete_event` actions. For that reason Work Calendar does not modify or delete existing events programmatically in v0.3.0. Existing events can be edited in Home Assistant's Calendar dashboard; the monthly sensors will then reflect the changed calendar data.
+
+## Version 0.3.1
+
+### Recording another day
+
+Home Assistant button entities cannot open an input dialog. To record another workday:
+
+1. Set **Anderen Arbeitstag auswählen** to the required date.
+2. Press **Ausgewählten Tag eintragen**.
+
+The integration then creates the configured work event (default: 17:00–21:00) on that selected date. The selected date is initialized reliably when the integration loads.
