@@ -1,7 +1,7 @@
 """Button platform for Work Calendar."""
 from __future__ import annotations
-from datetime import date,datetime,time,timedelta
-from typing import Any,Callable
+from datetime import datetime,time,timedelta
+from typing import Any
 from homeassistant.components.button import ButtonEntity
 from homeassistant.components.calendar import CalendarEntityFeature
 from homeassistant.config_entries import ConfigEntry
@@ -9,11 +9,11 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.util import dt as dt_util
-from .const import CONF_CALENDAR,CONF_END_TIME,CONF_EVENT_TITLE,CONF_START_TIME,DATA_SELECTED_DATES,DATA_SELECTED_END_TIMES,DATA_SELECTED_START_TIMES,DOMAIN,config_value
+from .const import CONF_CALENDAR,CONF_END_TIME,CONF_EVENT_TITLE,CONF_START_TIME,config_value
 
 def _parse_time(v:str|time)->time: return v if isinstance(v,time) else time.fromisoformat(v)
 async def async_setup_entry(hass:HomeAssistant,entry:ConfigEntry,async_add_entities:AddConfigEntryEntitiesCallback)->None:
- async_add_entities([WorkCalendarButton(hass,entry,"worked_today","Heute gearbeitet","mdi:briefcase-check",lambda:dt_util.now().date()),WorkCalendarButton(hass,entry,"worked_yesterday","Gestern gearbeitet","mdi:calendar-arrow-left",lambda:dt_util.now().date()-timedelta(days=1)),WorkCalendarButton(hass,entry,"worked_selected","Ausgewählten Tag eintragen","mdi:calendar-check",lambda:hass.data[DOMAIN][DATA_SELECTED_DATES][entry.entry_id])])
+ async_add_entities([WorkCalendarButton(hass,entry,"worked_today","Heute gearbeitet","mdi:briefcase-check",lambda:dt_util.now().date()),WorkCalendarButton(hass,entry,"worked_yesterday","Gestern gearbeitet","mdi:calendar-arrow-left",lambda:dt_util.now().date()-timedelta(days=1))])
 class WorkCalendarButton(ButtonEntity):
  _attr_has_entity_name=True
  def __init__(self,hass,entry,key,name,icon,date_resolver): self.hass=hass;self._entry=entry;self._date_resolver=date_resolver;self._attr_unique_id=f"{entry.entry_id}_{key}";self._attr_name=name;self._attr_icon=icon
@@ -22,7 +22,7 @@ class WorkCalendarButton(ButtonEntity):
   state=self.hass.states.get(config_value(self._entry,CONF_CALENDAR));return state is not None and bool(int(state.attributes.get("supported_features",0))&CalendarEntityFeature.CREATE_EVENT)
  async def async_press(self):
   work_date=self._date_resolver();cal=config_value(self._entry,CONF_CALENDAR);title=config_value(self._entry,CONF_EVENT_TITLE);tz=dt_util.DEFAULT_TIME_ZONE
-  custom=self._attr_unique_id.endswith("_worked_selected");start_time=self.hass.data[DOMAIN][DATA_SELECTED_START_TIMES][self._entry.entry_id] if custom else _parse_time(config_value(self._entry,CONF_START_TIME));end_time=self.hass.data[DOMAIN][DATA_SELECTED_END_TIMES][self._entry.entry_id] if custom else _parse_time(config_value(self._entry,CONF_END_TIME));start=datetime.combine(work_date,start_time,tzinfo=tz);end=datetime.combine(work_date,end_time,tzinfo=tz);
+  start_time=_parse_time(config_value(self._entry,CONF_START_TIME));end_time=_parse_time(config_value(self._entry,CONF_END_TIME));start=datetime.combine(work_date,start_time,tzinfo=tz);end=datetime.combine(work_date,end_time,tzinfo=tz);
   if end<=start:raise HomeAssistantError("Arbeitsende muss nach dem Arbeitsbeginn liegen")
   ds=datetime.combine(work_date,time.min,tzinfo=tz);de=ds+timedelta(days=1)
   response:dict[str,Any]|None=await self.hass.services.async_call("calendar","get_events",{"start_date_time":ds.isoformat(),"end_date_time":de.isoformat()},target={"entity_id":cal},blocking=True,return_response=True)
