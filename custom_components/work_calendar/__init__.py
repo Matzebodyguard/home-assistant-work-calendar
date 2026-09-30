@@ -39,7 +39,9 @@ async def async_setup(hass:HomeAssistant,config:ConfigType)->bool:
   start_clock=call.data.get("start_time") or _t(config_value(entry,CONF_START_TIME));end_clock=call.data.get("end_time") or _t(config_value(entry,CONF_END_TIME))
   if end_clock<=start_clock:raise ServiceValidationError("Arbeitsende muss nach dem Arbeitsbeginn liegen")
   tz=dt_util.DEFAULT_TIME_ZONE;start=datetime.combine(call.data["date"],start_clock,tzinfo=tz);end=datetime.combine(call.data["date"],end_clock,tzinfo=tz)
-  await hass.services.async_call("calendar","create_event",{"summary":config_value(entry,CONF_EVENT_TITLE),"start_date_time":start.isoformat(),"end_date_time":end.isoformat()},target={"entity_id":config_value(entry,CONF_CALENDAR)},blocking=True)\n  coordinator=hass.data.get(DOMAIN,{}).get("coordinators",{}).get(entry.entry_id)\n  if coordinator is not None:await coordinator.async_request_refresh()
+  await hass.services.async_call("calendar","create_event",{"summary":config_value(entry,CONF_EVENT_TITLE),"start_date_time":start.isoformat(),"end_date_time":end.isoformat()},target={"entity_id":config_value(entry,CONF_CALENDAR)},blocking=True)
+  coordinator=hass.data.get(DOMAIN,{}).get("coordinators",{}).get(entry.entry_id)
+  if coordinator is not None:await coordinator.async_request_refresh()
  hass.services.async_register(DOMAIN,"add_workday",add_workday,schema=SERVICE_SCHEMA);return True
 async def async_setup_entry(hass:HomeAssistant,entry:ConfigEntry)->bool:
  await hass.config_entries.async_forward_entry_setups(entry,PLATFORMS);return True
