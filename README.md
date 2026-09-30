@@ -105,3 +105,35 @@ Home Assistant button entities cannot open an input dialog. To record another wo
 2. Press **Ausgewählten Tag eintragen**.
 
 The integration then creates the configured work event (default: 17:00–21:00) on that selected date. The selected date is initialized reliably when the integration loads.
+
+## Version 0.5.0 – Dashboard card
+
+The optional Work Calendar dashboard card shows:
+
+- Workdays this month
+- Workdays last month
+- Worked today
+- Worked yesterday
+- Add another workday
+
+The last button opens a dialog for date, start time and end time.
+
+### Dashboard resource
+
+Copy `www/work-calendar-card.js` to Home Assistant's `/config/www/` directory and add it as a JavaScript module resource:
+
+`/local/work-calendar-card.js`
+
+Then add a manual card:
+
+```yaml
+type: custom:work-calendar-card
+config_entry_id: YOUR_WORK_CALENDAR_CONFIG_ENTRY_ID
+# Optional if automatic entity detection does not match your entity IDs:
+# today: button.heute_gearbeitet
+# yesterday: button.gestern_gearbeitet
+# days_this_month: sensor.arbeitstage_diesen_monat
+# days_last_month: sensor.arbeitstage_letzten_monat
+```
+
+The work-hours sensor from v0.3.x has been removed. Statistics now show workdays for the current and previous month.
