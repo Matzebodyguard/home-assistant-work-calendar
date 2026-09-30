@@ -1,0 +1,1 @@
+{"title":"Work Calendar","config":{"step":{"user":{"title":"Set up Work Calendar","data":{"calendar_entity":"Calendar","event_title":"Calendar event title","start_time":"Work start","end_time":"Work end"}}},"error":{"end_before_start":"The end time must be after the start time."}}}
